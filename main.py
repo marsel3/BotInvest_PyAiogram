@@ -94,6 +94,7 @@ async def echo_message(message: types.Message):
 @dp.callback_query_handler(lambda c: c.data and c.data.startswith('edit_'))
 async def process_callback_kb1btn1(call: types.CallbackQuery):
     global number, tov_id
+    create_user_bd(call.message.from_user.id)
 
     code = call.data[5:]
 
@@ -178,6 +179,7 @@ async def answer(call: types.CallbackQuery):
     if call.data == 'confirm':      # Подтварждение действий
         string = edit_confirm(user_id, number, tov_id)
         text, markup = portfel(user_id)
+        number = 1
         await bot.send_message(chat_id, f'{text}\n{string}', reply_markup=markup)
 
 
@@ -296,7 +298,9 @@ def add_to_basket(user, paper_id, count):  # Добавление, переза�
     results_2 = cursor.fetchall()
     price = results[2]
 
+    tek = 0
     if len(results_2) > 0:
+        tek = int(results_2[0][0])
         if add_balance(user, 0)[0] >= (float(price) * (int(count) - int(results_2[0][0]))):
             cursor.execute(f'DELETE FROM "{user}" where paper_id="{paper_id}"')
             conn.commit()
@@ -306,12 +310,11 @@ def add_to_basket(user, paper_id, count):  # Добавление, переза�
         price = str((float(results_2[0][1]) * int(results_2[0][0]) + float(results[2]) * int(count_start)) / int(count))
 
 
-
-    if add_balance(user, 0)[0] >= (float(price) * (int(count) - int(results_2[0][0]))):
+    if add_balance(user, 0)[0] >= (float(price) * (int(count) - tek)):
         cursor.execute(f'INSERT INTO "{user}" VALUES ("{results[0]}", "{results[1]}", "{price}", {count})')
         conn.commit()
-        add_balance(user, int(-float(price) * (int(count) - int(results_2[0][0]))))
-        string = 'Бумага добавлена в ваш портфель!'
+        text = add_balance(user, int(-float(price) * (int(count) - tek)))[1]
+        string = 'Бумага добавлена в ваш портфель!' + '\n' + text
     else:
         string = 'Операция не прошла, недостаточно средств!'
     conn.commit()
