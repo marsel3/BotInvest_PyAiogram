@@ -54,7 +54,7 @@ async def process_start_command(message: types.Message):
 
     markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     btns = [KeyboardButton('Рынок ценных бумаг'),
-            KeyboardButton('Просмотр портфель'),
+            KeyboardButton('Просмотр портфеля'),
             KeyboardButton('Информация о нашем брокере'),
             KeyboardButton('💬 Помощь')]
     markup.add(*btns)
@@ -67,14 +67,14 @@ async def process_start_command(message: types.Message):
 async def echo_message(message: types.Message):
 
     if message.text.lower() == "рынок ценных бумаг":
-        await bot.send_message(message.from_user.id, 'Выерите вид ценной бумаги:\n', reply_markup=type_id())
+        await bot.send_message(message.from_user.id, 'Выберите вид ценной бумаги:\n', reply_markup=type_id())
 
-    if message.text.lower() == "просмотр портфель":
+    if message.text.lower() == "просмотр портфеля":
         text, markup = portfel(message.from_user.id)
         await bot.send_message(message.chat.id, text, reply_markup=markup)
 
     if message.text.lower() == "информация о нашем брокере":
-        await bot.send_message(message.from_user.id, 'Наш Брокер ХаероФФ удерживает 1% cо всех операций!')
+        await bot.send_message(message.from_user.id, 'Наш Брокер ХакебоФФ удерживает 1% cо всех операций!')
 
 
     if message.text[0:5] == 'fill_':
