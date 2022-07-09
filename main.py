@@ -74,7 +74,7 @@ async def echo_message(message: types.Message):
         await bot.send_message(message.chat.id, text, reply_markup=markup)
 
     if message.text.lower() == "информация о нашем брокере":
-        await bot.send_message(message.from_user.id, 'Наш Брокер ХаероФФ удерживает 1% c покупки ценных бумаг и поплнений!')
+        await bot.send_message(message.from_user.id, 'Наш Брокер ХаероФФ удерживает 1% cо всех операций!')
 
 
     if message.text[0:5] == 'fill_':
