@@ -81,8 +81,13 @@ async def echo_message(message: types.Message):
         code = message.text[5:]
         text = add_balance(message.chat.id, code)[1]
         await bot.delete_message(message.chat.id, message.message_id)
-        await bot.send_message(message.chat.id, f'Баланс пополнен на {int(code) * 0.99} рублей!'
-                                                f'\n{text}')
+        if text == "ERROR":
+            await bot.send_message(message.chat.id, f'а-а-а! Нельзя снимать больше, чем сумма на балансе!')
+        else:
+            if int(code) > 0:
+                await bot.send_message(message.chat.id, f'Баланс пополнен на {int(code) * 0.99} рублей!\n{text}')
+            else:
+                await bot.send_message(message.chat.id, f'С баланса списано {int(code) * 0.99} рублей!\n{text}')
 
 
     if message.text == "💬 Помощь" or message.text.lower() == "помощь":
@@ -268,6 +273,11 @@ def add_balance(user, money):
     cursor = conn.cursor()
     cursor.execute(f'SELECT user_id, user_balance FROM users_info WHERE user_id="{user}"')
     result = cursor.fetchall()
+    try:
+        if float(result[0][1]) + float(money) < 0:
+            return 0, 'ERROR'
+    except:
+        pass
 
     if len(result) == 0:
         balance = float(money)
@@ -324,6 +334,7 @@ def add_to_basket(user, paper_id, count):  # Добавление, переза�
 
 
 def portfel(user):
+    create_user_bd(user)
     add_balance(user, 0)
 
     conn = sqlite3.connect('db/users.db')
@@ -352,7 +363,7 @@ def portfel(user):
             count += 1
         string += '\n______________________________' + '_' * len(str(summ))
 
-    text = f'СВОБОДНЫЙ БАЛАНС: {results_1[1]} руб.\n\nБАЛАНС АКТИВАМИ: {summ} руб.' + string
+    text = f'СВОБОДНЫЙ БАЛАНС: {round(float(results_1[1]), 2)} руб.\n\nБАЛАНС АКТИВАМИ: {summ} руб.' + string
 
     return text, markup
 
