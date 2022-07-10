@@ -46,7 +46,7 @@ all_country_id = all_country_id()
 all_paper_id = all_paper_id()
 number = 1
 tov_id = ''
-
+type, vid, name = '', '', ''
 
 
 @dp.message_handler(commands=['start'])
@@ -132,15 +132,11 @@ async def process_callback_kb1btn1(call: types.CallbackQuery):
 @dp.callback_query_handler(lambda c: c.data)
 # async def answer(call: types.CallbackQuery, message: types.Message):
 async def answer(call: types.CallbackQuery):
-    global all_type_id, number, tov_id
+    global all_type_id, number, tov_id, type, vid, name
 
     chat_id = call.message.chat.id
     message_id = call.message.message_id
     user_id = call.message.chat.id
-
-    if call.data == 'back_to_type':
-        await bot.delete_message(chat_id, message_id)
-        await bot.send_message(chat_id, 'Выерите вид ценной бумаги:\n', reply_markup=type_id())
 
     if call.data == 'minus':    # Уменьшить число на 1
         if number > 0:
@@ -154,20 +150,37 @@ async def answer(call: types.CallbackQuery):
         await bot.edit_message_reply_markup(chat_id, message_id, reply_markup=call.message.reply_markup)
 
 
-    if call.data in all_type_id:
+    if call.data == 'back_to_vid':
         await bot.delete_message(chat_id, message_id)
-        await bot.send_message(chat_id, 'Выберите вид ценной бумаги',  reply_markup=name_in_country(call.data))
+        await bot.send_message(chat_id, 'Выерите вид ценной бумаги:\n', reply_markup=type_id())
 
+    if call.data in all_type_id:
+        vid = call.data
+        await bot.delete_message(chat_id, message_id)
+        await bot.send_message(chat_id, 'Выберите тип ценной бумаги:',  reply_markup=name_in_country(call.data))
 
-    if call.data in all_country_id or call.data == 'back_to_papers':
+    if call.data == 'back_to_type':
+        name = call.data
+        await bot.delete_message(chat_id, message_id)
+        await bot.send_message(chat_id, 'Выберите название ценной бумаги', reply_markup=name_in_country(vid))
+
+    if call.data in all_country_id:
+        name = call.data
         await bot.delete_message(chat_id, message_id)
         await bot.send_message(chat_id, 'Выберите тип ценной бумаги', reply_markup=name_paper(call.data))
+
+    if call.data == 'back_to_papers':
+        await bot.delete_message(chat_id, message_id)
+        await bot.send_message(chat_id, 'Выберите тип ценной бумаги', reply_markup=name_paper(name))
 
     if call.data in all_paper_id:
         tov_id = call.data
         string, markup = paper_card(call.data)
         await bot.delete_message(chat_id, message_id)
         await bot.send_message(chat_id, string, reply_markup=markup)
+
+
+
 
     if call.data == 'add_to_basket':
         if number == 0:
@@ -214,7 +227,7 @@ def name_in_country(type):  # Выводит ценные бумаги в кно
 
     markup = types.InlineKeyboardMarkup(row_width=1)
     btns = [InlineKeyboardButton(text=f'{i[1]}', callback_data=f'{i[0]}') for i in results]
-    markup.add(*btns, InlineKeyboardButton(text=f'Назад', callback_data=f'back_to_type'))
+    markup.add(*btns, InlineKeyboardButton(text=f'Назад', callback_data=f'back_to_vid'))
     return markup
 
 
