@@ -87,7 +87,7 @@ async def echo_message(message: types.Message):
             if int(code) > 0:
                 await bot.send_message(message.chat.id, f'Баланс пополнен на {int(code) * 0.99} рублей!\n{text}')
             else:
-                await bot.send_message(message.chat.id, f'С баланса списано {int(code) * 0.99} рублей!\n{text}')
+                await bot.send_message(message.chat.id, f'С баланса списано {abs(int(code) * 0.99)} рублей!\n{text}')
 
 
     if message.text == "💬 Помощь" or message.text.lower() == "помощь":
