@@ -4,7 +4,7 @@ from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton
 
 
 def all_type_id():     # Список всех типов
@@ -197,7 +197,7 @@ async def answer(call: types.CallbackQuery):
                                         '\nЕсли перед суммой добавить "-", то сумма спишется'
                                         '\nДля пополнения на 100 рублей: fill_100')
 
-    if call.data == 'confirm':      # Подтварждение действий
+    if call.data == 'confirm':      # Подтвeрждение действий
         string = edit_confirm(user_id, number, tov_id)
         text, markup = portfel(user_id)
         number = 1
