@@ -54,7 +54,7 @@ async def process_start_command(message: types.Message):
 
     markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     btns = [KeyboardButton('Рынок ценных бумаг'),
-            KeyboardButton('Просмотр портфеля'),
+            KeyboardButton('Просмотреть портфель'),
             KeyboardButton('Информация о нашем брокере'),
             KeyboardButton('💬 Помощь')]
     markup.add(*btns)
@@ -69,7 +69,7 @@ async def echo_message(message: types.Message):
     if message.text.lower() == "рынок ценных бумаг":
         await bot.send_message(message.from_user.id, 'Выберите вид ценной бумаги:\n', reply_markup=type_id())
 
-    if message.text.lower() == "просмотр портфеля":
+    if message.text.lower() == "просмотреть портфель":
         text, markup = portfel(message.from_user.id)
         await bot.send_message(message.chat.id, text, reply_markup=markup)
 
@@ -159,7 +159,7 @@ async def answer(call: types.CallbackQuery):
         await bot.send_message(chat_id, 'Выберите вид ценной бумаги',  reply_markup=name_in_country(call.data))
 
 
-    if call.data in all_country_id:
+    if call.data in all_country_id or call.data == 'back_to_papers':
         await bot.delete_message(chat_id, message_id)
         await bot.send_message(chat_id, 'Выберите тип ценной бумаги', reply_markup=name_paper(call.data))
 
@@ -170,8 +170,11 @@ async def answer(call: types.CallbackQuery):
         await bot.send_message(chat_id, string, reply_markup=markup)
 
     if call.data == 'add_to_basket':
-        string = add_to_basket(user_id, tov_id, number)
-        number = 1
+        if number == 0:
+            string = 'Эм... Как ты собрался покупать 0 ценных бумаг?'
+        else:
+            string = add_to_basket(user_id, tov_id, number)
+            number = 1
         await bot.delete_message(chat_id, message_id)
         await bot.send_message(chat_id, string)
 
@@ -246,7 +249,7 @@ def paper_card(paper):
     markup.add(*btns)
 
     markup.add(InlineKeyboardButton(text=f'Купить', callback_data=f'add_to_basket'))
-    markup.add(InlineKeyboardButton(text=f'Назад', callback_data=f'back_to_type'))
+    markup.add(InlineKeyboardButton(text=f'Назад', callback_data=f'back_to_papers'))
 
     return string, markup
 
@@ -358,12 +361,12 @@ def portfel(user):
     string = ''
     if len(results) > 0:
         for i in results:
-            string += f"\n{count}.  {i[1]} \n{i[2]} * {i[3]}  =  {float(i[2]) * int(i[3])} рублей"
+            string += f"\n{count}.  {i[1]} \n{i[2]} * {i[3]}  =  {round(float(i[2]) * int(i[3]), 2)} рублей"
             summ += (float(i[2]) * int(i[3]))
             count += 1
         string += '\n______________________________' + '_' * len(str(summ))
 
-    text = f'СВОБОДНЫЙ БАЛАНС: {round(float(results_1[1]), 2)} руб.\n\nБАЛАНС АКТИВАМИ: {summ} руб.' + string
+    text = f'СВОБОДНЫЙ БАЛАНС: {round(float(results_1[1]), 2)} руб.\n\nБАЛАНС АКТИВАМИ: {round(summ, 2)} руб.' + string
 
     return text, markup
 
