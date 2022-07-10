@@ -244,7 +244,7 @@ def name_paper(paper):  # Выводит названия ценных бума�
     return markup
 
 
-def paper_card(paper):
+def paper_card(paper): # Создает описание карточки ценной бумаги
     global number
 
     conn = sqlite3.connect('db/date_base.db')
@@ -267,7 +267,7 @@ def paper_card(paper):
     return string, markup
 
 
-def create_user_bd(user):   # Cоздаёт БД с id юзера, для корзины
+def create_user_bd(user):   # Cоздаёт БД с id юзера, для пользователя
     conn = sqlite3.connect('db/users.db')
     cursor = conn.cursor()
     cursor.execute(f'CREATE TABLE IF NOT EXISTS "{user}" (paper_id text, paper_name text, price text, paper_count text)')
@@ -276,7 +276,7 @@ def create_user_bd(user):   # Cоздаёт БД с id юзера, для кор
     conn.close()
 
 
-def add_balance(user, money):
+def add_balance(user, money): # Добавляет или списывает деньги с баланса
     create_user_bd(user)
 
     string = f'Комиссия брокера {abs(float(money) / 100)} руб.'
@@ -308,7 +308,7 @@ def add_balance(user, money):
 
 
 
-def add_to_basket(user, paper_id, count):  # Добавление, перезапись в БД юзера товары
+def add_to_basket(user, paper_id, count):  # Добавление, перезапись в БД юзера бумаги
     create_user_bd(user)
 
     conn = sqlite3.connect('db/date_base.db')
@@ -349,7 +349,7 @@ def add_to_basket(user, paper_id, count):  # Добавление, переза�
     return string
 
 
-def portfel(user):
+def portfel(user): # Выводит информацию о портфеле
     create_user_bd(user)
     add_balance(user, 0)
 
@@ -384,7 +384,7 @@ def portfel(user):
     return text, markup
 
 
-def del_cat_basket(user, tov_id):   # Удаляет строку товаров по id
+def del_cat_basket(user, tov_id):   # Удаляет строку бумаги по id
     conn = sqlite3.connect('db/users.db')
     cursor = conn.cursor()
     cursor.execute(f'DELETE FROM "{user}" WHERE paper_id="{tov_id}"')
@@ -392,7 +392,7 @@ def del_cat_basket(user, tov_id):   # Удаляет строку товаров
     conn.close()
 
 
-def edit_confirm(user, number, tov_id):  # Сохраняет увеличение или уменьшение количества товаров
+def edit_confirm(user, number, tov_id):  # Сохраняет увеличение или уменьшение количества бумаг
     conn = sqlite3.connect('db/users.db')
     cursor = conn.cursor()
     cursor.execute(f'SELECT paper_count, price FROM "{user}" WHERE paper_id="{tov_id}"')
